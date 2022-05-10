@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>画板</title>
+</head>
+
+<body>
+    <!--canvas的长宽得在一开始确定，如果在css中确定的话，会被拉伸-->
+    <canvas id="canvas"></canvas>
+    <script>
+        //获取canvas
+        let canvas = document.getElementById('canvas')
+        //把canvas的高度换成文档的高度，宽度换成文档的宽度
+        canvas.width = document.documentElement.clientWidth
+        canvas.height = document.documentElement.clientHeight
+        //canvas画线
+        let ctx = canvas.getContext("2d");
+        // ctx.fillStyle = "blue";
+        ctx.fillStyle = 'black'
+        ctx.strokeStyle = 'black'
+        ctx.lineWidth = 10
+        ctx.lineJoin = 'round'
+
+        let painting = false
+        //是否支持触屏
+        var isTouchDevice = 'ontouchstart' in document.documentElement;
+        console.log(isTouchDevice)
+
+        if (isTouchDevice) {
+            canvas.ontouchstart = (e) => {
+                let x = e.touches[0].clientX;
+                let y = e.touches[0].clientY;
+                last = [x, y]
+            }
+
+            canvas.ontouchmove = (e) => {
+                let x = e.touches[0].clientX;
+                let y = e.touches[0].clientY
+                // ctx.beginPath();
+                // ctx.arc(x, y, 10, 0, 2 * Math.PI, false);
+                // ctx.stroke();
+                // ctx.fill();
+                drawLine(last[0], last[1], x, y)
+                last = [x, y]
+            }
+        } else {
+            canvas.onmousedown = (e) => {
+                painting = true
+                last = [e.clientX, e.clientY]
+            }
+            canvas.onmousemove = (e) => {
+                if (painting === true) {
+                    //ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10);画矩形
+                    // ctx.beginPath();
+                    // ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI, false);
+                    // ctx.stroke();//描边
+                    // ctx.fill();//填充内部
+                    drawLine(last[0], last[1], e.clientX, e.clientY)
+                    last = [e.clientX, e.clientY]
+                } else {
+                    console.log("什么也不做")
+                }
+            }
+            canvas.onmouseup = () => {
+                painting = false
+            }
+
+        }
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+    </script>
+</body>
+
+</html>
